@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeuroSpark — Explore Your Brain</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #03080f;
+    --surface: #07131f;
+    --card: #0d1f30;
+    --border: #1a3348;
+    --accent: #00c9c8;
+    --accent2: #7f5af0;
+    --accent3: #f7b731;
+    --text: #e8f4fd;
+    --muted: #7a9bb5;
+    --danger: #ff4e6a;
+    --success: #2cb67d;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 40px;
+    background: rgba(3,8,15,0.85);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; color: var(--accent); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--accent2); }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,201,200,.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 70%, rgba(127,90,240,.07) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display: inline-block; padding: 6px 18px;
+    border: 1px solid var(--border); border-radius: 99px;
+    font-size: .78rem; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 24px; background: rgba(0,201,200,.06);
+  }
+  h1 {
+    font-family: var(--font-head); font-weight: 800; font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.05; letter-spacing: -2px;
+    background: linear-gradient(135deg, #e8f4fd 30%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 20px;
+  }
+  .hero p { max-width: 600px; color: var(--muted); font-size: 1.1rem; margin-bottom: 36px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 32px; border-radius: 99px;
+    font-family: var(--font-head); font-weight: 700; font-size: .95rem;
+    text-decoration: none; transition: all .25s; cursor: pointer; border: none;
+  }
+  .btn-primary { background: var(--accent); color: #03080f; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,201,200,.35); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* floating particles */
+  .particle {
+    position: absolute; border-radius: 50%;
+    background: var(--accent); opacity: .12;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: .12; }
+    90% { opacity: .08; }
+    100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+  }
+
+  /* ── SECTION STYLES ── */
+  section { padding: 90px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: .75rem; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+  }
+  h2 {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -1px;
+    line-height: 1.1; margin-bottom: 16px;
+  }
+  .subtitle { color: var(--muted); max-width: 640px; margin-bottom: 56px; font-size: 1.05rem; }
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ── BRAIN DIAGRAM ── */
+  .brain-section { background: var(--surface); border-radius: 24px; padding: 60px 48px; margin: 0 auto; max-width: 1100px; }
+  .brain-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  @media(max-width:768px) { .brain-wrap { grid-template-columns: 1fr; } }
+
+  .brain-svg-container { position: relative; }
+  .brain-svg-container svg { width: 100%; max-width: 440px; display: block; margin: 0 auto; }
+
+  .region-dot {
+    position: absolute; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); border: 2px solid #fff; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,201,200,.5); }
+    50% { box-shadow: 0 0 0 8px rgba(0,201,200,0); }
+  }
+  .region-dot:hover { transform: scale(1.4); }
+
+  .region-cards { display: flex; flex-direction: column; gap: 14px; }
+  .region-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 20px; cursor: pointer; transition: all .22s;
+    border-left: 3px solid transparent;
+  }
+  .region-card:hover, .region-card.active {
+    border-left-color: var(--accent);
+    background: rgba(0,201,200,.06);
+    transform: translateX(4px);
+  }
+  .region-card h4 { font-family: var(--font-head); font-size: 1rem; margin-bottom: 4px; color: var(--accent); }
+  .region-card p { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+
+  /* brain SVG regions colour */
+  .br-frontal { fill: #00c9c8; opacity: .7; }
+  .br-parietal { fill: #7f5af0; opacity: .7; }
+  .br-temporal { fill: #f7b731; opacity: .7; }
+  .br-occipital { fill: #ff4e6a; opacity: .7; }
+  .br-cerebellum { fill: #2cb67d; opacity: .7; }
+  .br-brainstem { fill: #f97316; opacity: .7; }
+  .br-base { fill: #1a3348; }
+
+  /* ── DISORDER SECTION ── */
+  .disorder-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 48px; }
+  @media(max-width:768px) { .disorder-grid { grid-template-columns: 1fr; } }
+  .disorder-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 28px;
+    position: relative; overflow: hidden;
+  }
+  .disorder-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .disorder-card.brain::before { background: var(--accent); }
+  .disorder-card.cognitive::before { background: var(--accent2); }
+  .disorder-card.behaviour::before { background: var(--accent3); }
+  .disorder-icon { font-size: 2.2rem; margin-bottom: 14px; }
+  .disorder-card h3 { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 12px; }
+  .disorder-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .disorder-card ul li {
+    font-size: .88rem; color: var(--muted); padding-left: 18px; position: relative; line-height: 1.5;
+  }
+  .disorder-card ul li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--accent); font-size: .8rem;
+  }
+  .disorder-card.cognitive ul li::before { color: var(--accent2); }
+  .disorder-card.behaviour ul li::before { color: var(--accent3); }
+
+  .sld-hero {
+    background: linear-gradient(135deg, rgba(127,90,240,.15), rgba(0,201,200,.08));
+    border: 1px solid var(--border); border-radius: 24px;
+    padding: 48px; margin-bottom: 40px; display: grid;
+    grid-template-columns: 1fr 280px; gap: 40px; align-items: center;
+  }
+  @media(max-width:768px) { .sld-hero { grid-template-columns: 1fr; } }
+  .sld-badge {
+    display: inline-block; padding: 5px 14px; border-radius: 99px;
+    background: rgba(127,90,240,.2); color: var(--accent2);
+    font-size: .78rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .sld-stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; text-align: center;
+  }
+  .sld-stat .num { font-family: var(--font-head); font-size: 2.8rem; font-weight: 800; color: var(--accent2); }
+  .sld-stat .label { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+
+  /* ── INTERACTIVE ── */
+  .interactive-tabs { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
+  .tab-btn {
+    padding: 10px 22px; border-radius: 99px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-family: var(--font-body);
+    font-size: .9rem; font-weight: 500; cursor: pointer; transition: all .2s;
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background: var(--accent); color: #03080f; border-color: var(--accent);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn .3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Memory Game */
+  .memory-board {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 480px; margin: 0 auto;
+  }
+  .memory-card {
+    aspect-ratio: 1; border-radius: 12px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    transition: all .3s; user-select: none;
+    perspective: 600px; position: relative;
+  }
+  .memory-card .front, .memory-card .back {
+    position: absolute; inset: 0; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    backface-visibility: hidden; transition: transform .4s;
+  }
+  .memory-card .front { background: var(--card); border: 1px solid var(--border); font-size: 1.8rem; transform: rotateY(180deg); }
+  .memory-card .back { background: linear-gradient(135deg, var(--card), #122030); font-size: 1.4rem; color: var(--accent); }
+  .memory-card.flipped .front { transform: rotateY(0deg); }
+  .memory-card.flipped .back { transform: rotateY(-180deg); }
+  .memory-card.matched .front { background: rgba(44,182,125,.15); border-color: var(--success); }
+  .game-status {
+    text-align: center; padding: 16px; background: var(--card); border-radius: 12px;
+    margin-bottom: 20px; display: flex; justify-content: space-around;
+  }
+  .game-status .stat { text-align: center; }
+  .game-status .stat .val { font-family: var(--font-head); font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+  .game-status .stat .lbl { font-size: .78rem; color: var(--muted); }
+
+  /* Optical Illusion */
+  .illusion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media(max-width:640px) { .illusion-grid { grid-template-columns: 1fr; } }
+  .illusion-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    padding: 32px; text-align: center;
+  }
+  .illusion-box h3 { font-family: var(--font-head); margin-bottom: 16px; color: var(--accent); }
+  .illusion-box canvas, .illusion-box svg { display: block; margin: 0 auto 16px; border-radius: 8px; }
+  .illusion-explain { font-size: .88rem; color: var(--muted); line-height: 1.6; text-align: left; margin-top: 12px; }
+  .reveal-btn {
+    margin-top: 12px; padding: 8px 20px; border-radius: 99px;
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    cursor: pointer; font-family: var(--font-body); font-size: .85rem; transition: all .2s;
+  }
+  .reveal-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .illusion-answer { display: none; margin-top: 10px; font-size: .85rem; color: var(--success); line-height: 1.5; }
+
+  /* Quiz */
+  .quiz-container { max-width: 680px; margin: 0 auto; }
+  .quiz-progress { height: 4px; background: var(--border); border-radius: 99px; margin-bottom: 28px; overflow: hidden; }
+  .quiz-progress-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s; }
+  .quiz-q { font-family: var(--font-head); font-size: 1.15rem; margin-bottom: 20px; line-height: 1.4; }
+  .quiz-options { display: flex; flex-direction: column; gap: 12px; }
+  .quiz-opt {
+    padding: 14px 20px; border: 1px solid var(--border); border-radius: 12px;
+    background: var(--card); color: var(--text); cursor: pointer;
+    font-family: var(--font-body); font-size: .95rem; text-align: left;
+    transition: all .2s;
+  }
+  .quiz-opt:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-opt.correct { background: rgba(44,182,125,.15); border-color: var(--success); color: var(--success); }
+  .quiz-opt.wrong { background: rgba(255,78,106,.12); border-color: var(--danger); color: var(--danger); }
+  .quiz-feedback { margin-top: 16px; padding: 14px 18px; border-radius: 12px; font-size: .9rem; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(44,182,125,.1); color: var(--success); border: 1px solid rgba(44,182,125,.3); }
+  .quiz-feedback.no { background: rgba(255,78,106,.1); color: var(--danger); border: 1px solid rgba(255,78,106,.3); }
+  .quiz-next { margin-top: 16px; }
+  .quiz-result { text-align: center; padding: 40px; }
+  .quiz-result .score-big { font-family: var(--font-head); font-size: 4rem; font-weight: 800; color: var(--accent); }
+  .quiz-result p { color: var(--muted); margin: 8px 0 24px; }
+
+  /* Reaction Time */
+  .reaction-area {
+    max-width: 540px; margin: 0 auto; text-align: center;
+  }
+  #reaction-box {
+    width: 100%; height: 220px; border-radius: 20px; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .15s, border-color .15s;
+    background: var(--card); font-family: var(--font-head); font-size: 1.4rem;
+    user-select: none; margin-bottom: 20px;
+  }
+  #reaction-box.wait { background: rgba(255,78,106,.1); border-color: var(--danger); color: var(--danger); }
+  #reaction-box.go { background: rgba(44,182,125,.15); border-color: var(--success); color: var(--success); }
+  .reaction-scores { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+  .reaction-chip {
+    padding: 8px 18px; border-radius: 99px; background: var(--card); border: 1px solid var(--border);
+    font-family: var(--font-head); font-size: 1rem; color: var(--accent);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 40px 40px; text-align: center;
+  }
+  footer p { color: var(--muted); font-size: .88rem; }
+  footer strong { color: var(--accent); }
+
+  /* ── MISC ── */
+  .full-width { max-width: 100%; padding-left: 0; padding-right: 0; }
+  .full-bg { background: var(--surface); }
+  .tag {
+    display: inline-block; padding: 4px 12px; border-radius: 99px;
+    background: rgba(0,201,200,.1); color: var(--accent);
+    font-size: .78rem; font-weight: 600; margin-right: 6px; margin-bottom: 6px;
+  }
+  .info-banner {
+    background: linear-gradient(135deg, rgba(0,201,200,.07), rgba(127,90,240,.07));
+    border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px;
+    color: var(--muted); font-size: .9rem; margin-top: 24px;
+  }
+  .info-banner strong { color: var(--text); }
+
+  @media(max-width:600px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 16px; }
+    .brain-section { padding: 32px 20px; }
+    .sld-hero { padding: 28px 20px; }
+    .disorder-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Neuro<span>Spark</span></div>
+  <ul class="nav-links">
+    <li><a href="#brain">The Brain</a></li>
+    <li><a href="#disorder">Learning Disorders</a></li>
+    <li><a href="#interactive">Interactive</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+
+<!-- Floating particles -->
+<div class="hero" style="position:relative">
+  <div class="hero-bg"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const hero = document.querySelector('.hero');
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `
+          left:${Math.random()*100}%;
+          width:${4+Math.random()*8}px;
+          height:${4+Math.random()*8}px;
+          animation-duration:${8+Math.random()*14}s;
+          animation-delay:${-Math.random()*12}s;
+        `;
+        hero.appendChild(p);
+      }
+    });
+  </script>
+  <div style="position:relative;z-index:2">
+    <div class="hero-badge">🧠 KMF1053 · Cognitive Neuroscience</div>
+    <h1>Explore<br/>Your Brain</h1>
+    <p>A science-based guide to understanding how your brain shapes everything you think, feel, and do — designed for everyone.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="#brain" class="btn btn-primary">Start Exploring ↓</a>
+      <a href="#interactive" class="btn btn-ghost">Try Challenges</a>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BRAIN SECTION -->
+<div id="brain" class="full-bg" style="padding:80px 0">
+<section class="brain-section">
+  <div class="section-label">01 — The Brain</div>
+  <h2>Major Brain Regions</h2>
+  <p class="subtitle">Click each region card to learn what it does. The brain works as a connected team — no part works alone!</p>
+
+  <div class="brain-wrap">
+    <!-- SVG Brain Diagram -->
+    <div class="brain-svg-container">
+      <svg viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg" aria-label="Labelled brain diagram">
+        <!-- brain outline / base -->
+        <ellipse cx="210" cy="170" rx="190" ry="150" class="br-base" stroke="#1a3348" stroke-width="2"/>
+
+        <!-- Frontal lobe -->
+        <path d="M90,80 C110,40 180,30 240,50 C260,58 275,80 270,110 C260,140 230,155 200,155 C165,155 110,140 90,110 Z" class="br-frontal" id="reg-frontal"/>
+        <!-- Parietal lobe -->
+        <path d="M200,60 C240,40 300,50 340,80 C360,100 360,140 340,160 C310,175 270,165 240,150 C220,138 215,120 218,100 Z" class="br-parietal" id="reg-parietal"/>
+        <!-- Temporal lobe -->
+        <path d="M75,130 C85,110 110,120 130,140 C150,160 155,195 145,220 C130,245 100,255 80,240 C60,225 55,195 65,170 Z" class="br-temporal" id="reg-temporal"/>
+        <!-- Occipital lobe -->
+        <path d="M280,140 C310,130 360,145 380,175 C395,200 385,235 360,250 C330,265 295,255 275,235 C255,215 258,185 270,165 Z" class="br-occipital" id="reg-occipital"/>
+        <!-- Cerebellum -->
+        <path d="M120,250 C150,235 240,235 310,255 C340,265 355,290 340,310 C315,335 260,345 210,342 C160,340 110,325 98,305 C88,288 95,262 120,250 Z" class="br-cerebellum" id="reg-cerebellum"/>
+        <!-- Brainstem -->
+        <path d="M185,245 C195,235 225,235 235,245 C245,260 248,290 240,310 C230,330 195,332 185,310 C176,290 177,262 185,245 Z" class="br-brainstem" id="reg-brainstem"/>
+
+        <!-- Labels -->
+        <text x="155" y="95" fill="#e8f4fd" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Frontal</text>
+        <text x="280" y="105" fill="#e8f4fd" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Parietal</text>
+        <text x="65" y="185" fill="#e8f4fd" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Temporal</text>
+        <text x="310" y="200" fill="#e8f4fd" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Occipital</text>
+        <text x="170" y="300" fill="#e8f4fd" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Cerebellum</text>
+        <text x="185" y="260" fill="#e8f4fd" font-family="DM Sans,sans-serif" font-size="10" font-weight="500">Brainstem</text>
+
+        <!-- Connector lines -->
+        <line x1="175" y1="90" x2="160" y2="100" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+        <line x1="290" y1="100" x2="302" y2="108" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      </svg>
+      <div class="info-banner" style="margin-top:20px">
+        <strong>🎨 Colour Key:</strong><br/>
+        <span class="tag" style="background:rgba(0,201,200,.2);color:#00c9c8">Frontal</span>
+        <span class="tag" style="background:rgba(127,90,240,.2);color:#7f5af0">Parietal</span>
+        <span class="tag" style="background:rgba(247,183,49,.2);color:#f7b731">Temporal</span>
+        <span class="tag" style="background:rgba(255,78,106,.2);color:#ff4e6a">Occipital</span>
+        <span class="tag" style="background:rgba(44,182,125,.2);color:#2cb67d">Cerebellum</span>
+        <span class="tag" style="background:rgba(249,115,22,.2);color:#f97316">Brainstem</span>
+      </div>
+    </div>
+
+    <!-- Region cards -->
+    <div class="region-cards">
+      <div class="region-card active" onclick="selectRegion(this)">
+        <h4>🧠 Frontal Lobe</h4>
+        <p>Controls decision-making, planning, personality, voluntary movement, and problem-solving. It's the brain's "CEO" — responsible for impulse control and long-term thinking.</p>
+      </div>
+      <div class="region-card" onclick="selectRegion(this)">
+        <h4>🟣 Parietal Lobe</h4>
+        <p>Processes sensory information from the body — touch, temperature, pain. Also integrates spatial awareness, helping you navigate and understand where your body is in space.</p>
+      </div>
+      <div class="region-card" onclick="selectRegion(this)">
+        <h4>🟡 Temporal Lobe</h4>
+        <p>Handles hearing, language comprehension, and memory formation. The hippocampus, located here, is essential for converting short-term memories into long-term storage.</p>
+      </div>
+      <div class="region-card" onclick="selectRegion(this)">
+        <h4>🔴 Occipital Lobe</h4>
+        <p>The brain's visual processing centre. It interprets colour, shape, motion, and depth from signals sent by your eyes — making it possible to "see" and understand images.</p>
+      </div>
+      <div class="region-card" onclick="selectRegion(this)">
+        <h4>🟢 Cerebellum</h4>
+        <p>Coordinates movement, balance, and fine motor control. It also plays roles in timing, language, and some aspects of emotional processing.</p>
+      </div>
+      <div class="region-card" onclick="selectRegion(this)">
+        <h4>🟠 Brainstem</h4>
+        <p>Controls automatic life-sustaining functions: breathing, heart rate, swallowing, and sleep-wake cycles. It connects the brain to the spinal cord and the rest of the body.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="divider"></div>
+
+<!-- DISORDER SECTION -->
+<div id="disorder" style="padding:80px 0">
+<section>
+  <div class="section-label">02 — Learning Disorders</div>
+  <h2>Specific Learning<br/>Disorders (SLDs)</h2>
+  <p class="subtitle">Dyslexia, Dyscalculia, and Dysgraphia are the three most common specific learning disorders. They are brain-based — not caused by low intelligence or lack of effort.</p>
+
+  <!-- SLD intro hero -->
+  <div class="sld-hero">
+    <div>
+      <div class="sld-badge">Specific Learning Disorder</div>
+      <h3 style="font-family:var(--font-head);font-size:1.6rem;margin-bottom:14px">What are Specific Learning Disorders?</h3>
+      <p style="color:var(--muted);margin-bottom:16px">
+        Specific Learning Disorders (SLDs) are neurodevelopmental conditions that affect the brain's ability to process and use certain types of information. They typically emerge during school years and can persist into adulthood.
+      </p>
+      <p style="color:var(--muted)">
+        People with SLDs often have average or above-average intelligence — the challenge lies in how their brains process specific inputs like written words, numbers, or motor sequences for writing.
+      </p>
+      <div style="margin-top:20px">
+        <span class="tag">📖 Dyslexia</span>
+        <span class="tag">🔢 Dyscalculia</span>
+        <span class="tag">✏️ Dysgraphia</span>
+        <span class="tag">Neurodevelopmental</span>
+      </div>
+    </div>
+    <div>
+      <div class="sld-stat">
+        <div class="num">15–20%</div>
+        <div class="label">of the population has a language-based learning disability</div>
+      </div>
+      <div class="sld-stat" style="margin-top:14px">
+        <div class="num">1 in 5</div>
+        <div class="label">students is estimated to have at least one specific learning disorder</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DYSLEXIA ── -->
+  <div style="margin-bottom:48px">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="font-size:2.2rem">📖</div>
+      <div>
+        <div class="sld-badge" style="background:rgba(0,201,200,.15);color:var(--accent)">Reading & Language</div>
+        <h3 style="font-family:var(--font-head);font-size:1.5rem;margin-top:4px">Dyslexia</h3>
+      </div>
+    </div>
+    <p style="color:var(--muted);margin-bottom:24px;max-width:720px">Dyslexia is a learning disorder that affects reading, spelling, and decoding of written language. It is the most common specific learning disorder, caused by differences in how the brain processes phonological (sound-based) information.</p>
+    <div class="disorder-grid">
+      <div class="disorder-card brain">
+        <div class="disorder-icon">🔬</div>
+        <h3>Brain Mechanisms</h3>
+        <ul>
+          <li><strong>Left Temporal-Parietal Cortex:</strong> reduced activation during phonological processing — difficulty mapping letters to sounds</li>
+          <li><strong>Broca's Area (Frontal Lobe):</strong> underactivation during reading tasks, affecting language articulation</li>
+          <li><strong>Angular Gyrus:</strong> poor cross-modal integration between visual symbols and sounds</li>
+          <li><strong>Visual Word Form Area:</strong> slower processing of written words as whole units</li>
+        </ul>
+      </div>
+      <div class="disorder-card cognitive">
+        <div class="disorder-icon">🧩</div>
+        <h3>Cognitive Impact</h3>
+        <ul>
+          <li>Difficulty decoding unfamiliar words phonetically</li>
+          <li>Slow and effortful reading with frequent errors</li>
+          <li>Poor spelling despite repeated practice</li>
+          <li>Difficulty with rhyming and sound manipulation</li>
+          <li>Trouble remembering sequences (e.g., alphabet, days of week)</li>
+        </ul>
+      </div>
+      <div class="disorder-card behaviour">
+        <div class="disorder-icon">🌀</div>
+        <h3>Behavioural Consequences</h3>
+        <ul>
+          <li>Avoidance of reading aloud in class</li>
+          <li>Poor academic performance despite effort</li>
+          <li>Low self-esteem and frustration with schoolwork</li>
+          <li>Difficulty following written instructions</li>
+          <li>May appear "lazy" — often misunderstood by teachers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DYSCALCULIA ── -->
+  <div style="margin-bottom:48px">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="font-size:2.2rem">🔢</div>
+      <div>
+        <div class="sld-badge" style="background:rgba(127,90,240,.15);color:var(--accent2)">Numbers & Maths</div>
+        <h3 style="font-family:var(--font-head);font-size:1.5rem;margin-top:4px">Dyscalculia</h3>
+      </div>
+    </div>
+    <p style="color:var(--muted);margin-bottom:24px;max-width:720px">Dyscalculia is a learning disorder that affects a person's ability to understand numbers, learn arithmetic facts, and perform mathematical calculations. It affects approximately 3–7% of school-age children.</p>
+    <div class="disorder-grid">
+      <div class="disorder-card brain">
+        <div class="disorder-icon">🔬</div>
+        <h3>Brain Mechanisms</h3>
+        <ul>
+          <li><strong>Intraparietal Sulcus (Parietal Lobe):</strong> reduced grey matter and activation — this region is the core "number sense" area</li>
+          <li><strong>Prefrontal Cortex:</strong> working memory deficits affect holding and manipulating numbers mentally</li>
+          <li><strong>Right Hemisphere:</strong> spatial reasoning impairments affect understanding of number lines and geometry</li>
+          <li><strong>Hippocampus:</strong> difficulty retrieving stored arithmetic facts from memory</li>
+        </ul>
+      </div>
+      <div class="disorder-card cognitive">
+        <div class="disorder-icon">🧩</div>
+        <h3>Cognitive Impact</h3>
+        <ul>
+          <li>Weak number sense — difficulty estimating quantities</li>
+          <li>Trouble memorising multiplication tables</li>
+          <li>Poor understanding of place value and fractions</li>
+          <li>Difficulty telling time and managing money</li>
+          <li>Relies on finger-counting beyond expected age</li>
+        </ul>
+      </div>
+      <div class="disorder-card behaviour">
+        <div class="disorder-icon">🌀</div>
+        <h3>Behavioural Consequences</h3>
+        <ul>
+          <li>Anxiety and avoidance during maths lessons</li>
+          <li>Difficulty managing daily tasks (budgeting, schedules)</li>
+          <li>Struggles with subjects that rely on maths (physics, chemistry)</li>
+          <li>Low confidence in academic abilities</li>
+          <li>May take significantly longer to complete maths exams</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DYSGRAPHIA ── -->
+  <div style="margin-bottom:24px">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="font-size:2.2rem">✏️</div>
+      <div>
+        <div class="sld-badge" style="background:rgba(247,183,49,.15);color:var(--accent3)">Writing & Motor</div>
+        <h3 style="font-family:var(--font-head);font-size:1.5rem;margin-top:4px">Dysgraphia</h3>
+      </div>
+    </div>
+    <p style="color:var(--muted);margin-bottom:24px;max-width:720px">Dysgraphia is a learning disorder characterised by difficulty with handwriting, spelling, and putting thoughts into written form. It involves impairments in the fine motor and language systems of the brain.</p>
+    <div class="disorder-grid">
+      <div class="disorder-card brain">
+        <div class="disorder-icon">🔬</div>
+        <h3>Brain Mechanisms</h3>
+        <ul>
+          <li><strong>Motor Cortex (Frontal Lobe):</strong> difficulty coordinating the fine motor sequences required for handwriting</li>
+          <li><strong>Cerebellum:</strong> impaired motor learning and automation of writing movements</li>
+          <li><strong>Parietal Lobe:</strong> spatial processing deficits affect letter sizing, spacing, and alignment</li>
+          <li><strong>Basal Ganglia:</strong> difficulty automating learned motor patterns for letter formation</li>
+        </ul>
+      </div>
+      <div class="disorder-card cognitive">
+        <div class="disorder-icon">🧩</div>
+        <h3>Cognitive Impact</h3>
+        <ul>
+          <li>Illegible or inconsistent handwriting</li>
+          <li>Difficulty organising thoughts into written form</li>
+          <li>Slow writing speed — cannot keep up in class</li>
+          <li>Mixing upper and lower case letters randomly</li>
+          <li>Omitting words or letters when writing sentences</li>
+        </ul>
+      </div>
+      <div class="disorder-card behaviour">
+        <div class="disorder-icon">🌀</div>
+        <h3>Behavioural Consequences</h3>
+        <ul>
+          <li>Avoiding writing tasks or submitting incomplete work</li>
+          <li>Hand fatigue and pain during prolonged writing</li>
+          <li>Frustration — thoughts are clear but hard to express in writing</li>
+          <li>Poor exam performance despite knowing the content</li>
+          <li>May appear disorganised or careless to teachers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-banner" style="margin-top:12px">
+    <strong>💡 Did You Know?</strong> All three disorders — Dyslexia, Dyscalculia, and Dysgraphia — can co-occur in the same individual. Early identification, specialised teaching strategies, assistive technology, and classroom accommodations can significantly improve outcomes for students with SLDs.
+  </div>
+</section>
+</div>
+
+<div class="divider"></div>
+
+<!-- INTERACTIVE SECTION -->
+<div id="interactive" class="full-bg" style="padding:80px 0">
+<section>
+  <div class="section-label">03 — Interactive Learning</div>
+  <h2>Try These Challenges</h2>
+  <p class="subtitle">Test your own brain! Each activity is designed to show you a real cognitive process in action.</p>
+
+  <div class="interactive-tabs">
+    <button class="tab-btn active" onclick="switchTab('memory')">🧠 Memory Game</button>
+    <button class="tab-btn" onclick="switchTab('illusion')">👁️ Optical Illusions</button>
+    <button class="tab-btn" onclick="switchTab('reaction')">⚡ Reaction Time</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">📝 Brain Quiz</button>
+  </div>
+
+  <!-- ── MEMORY GAME ── -->
+  <div id="tab-memory" class="tab-panel active">
+    <div class="info-banner" style="margin-bottom:24px">
+      <strong>🧠 What this tests:</strong> Visual working memory and pattern recognition — functions of your <em>temporal lobe</em> and <em>hippocampus</em>. Match all pairs to win!
+    </div>
+    <div class="game-status">
+      <div class="stat"><div class="val" id="moves">0</div><div class="lbl">Moves</div></div>
+      <div class="stat"><div class="val" id="pairs">0/8</div><div class="lbl">Pairs</div></div>
+      <div class="stat"><div class="val" id="timer-mem">0s</div><div class="lbl">Time</div></div>
+    </div>
+    <div class="memory-board" id="memory-board"></div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn btn-primary" onclick="initMemory()">🔄 New Game</button>
+    </div>
+    <div id="memory-win" style="display:none;text-align:center;padding:28px;background:rgba(44,182,125,.1);border:1px solid var(--success);border-radius:14px;margin-top:20px">
+      <div style="font-size:2.5rem;margin-bottom:8px">🎉</div>
+      <div style="font-family:var(--font-head);font-size:1.5rem;color:var(--success)">You matched all pairs!</div>
+      <div id="win-stats" style="color:var(--muted);margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- ── OPTICAL ILLUSIONS ── -->
+  <div id="tab-illusion" class="tab-panel">
+    <div class="info-banner" style="margin-bottom:24px">
+      <strong>👁️ What this shows:</strong> Your <em>occipital lobe</em> and visual cortex can be "tricked" — proving that what we see is a brain interpretation, not objective reality.
+    </div>
+    <div class="illusion-grid">
+
+      <!-- Illusion 1: Rotating circles -->
+      <div class="illusion-box">
+        <h3>Are These Circles Moving?</h3>
+        <canvas id="illusionCanvas1" width="260" height="220"></canvas>
+        <p class="illusion-explain">Stare at the centre dot without moving your eyes. The rings appear to rotate — but they are <strong>completely still</strong>.</p>
+        <button class="reveal-btn" onclick="toggleAnswer('ans1')">🔍 Why does this happen?</button>
+        <div id="ans1" class="illusion-answer">Your brain's motion-detection neurons fire due to high-contrast colour patterns and peripheral vision processing. The occipital lobe interprets edge contrast differences as motion signals — a classic example of <strong>peripheral drift illusion</strong>.</div>
+      </div>
+
+      <!-- Illusion 2: Same colour squares -->
+      <div class="illusion-box">
+        <h3>Same Colour or Different?</h3>
+        <canvas id="illusionCanvas2" width="260" height="220"></canvas>
+        <p class="illusion-explain">Squares A and B appear to be different shades — one dark, one light. They are actually <strong>the exact same colour</strong>.</p>
+        <button class="reveal-btn" onclick="toggleAnswer('ans2');revealSameColour()">🔍 Reveal the truth</button>
+        <div id="ans2" class="illusion-answer">The brain uses <strong>colour constancy</strong> — it adjusts perceived colour based on surrounding context. The shadow cast over Square B makes your brain compensate, lightening its perceived shade. This is processed in the V4 area of the visual cortex.</div>
+      </div>
+
+      <!-- Illusion 3: Müller-Lyer -->
+      <div class="illusion-box">
+        <h3>Which Line is Longer?</h3>
+        <svg id="mullerLyer" width="260" height="120" viewBox="0 0 260 120">
+          <line x1="30" y1="40" x2="230" y2="40" stroke="#00c9c8" stroke-width="3"/>
+          <line x1="30" y1="40" x2="50" y2="20" stroke="#00c9c8" stroke-width="2"/>
+          <line x1="30" y1="40" x2="50" y2="60" stroke="#00c9c8" stroke-width="2"/>
+          <line x1="230" y1="40" x2="210" y2="20" stroke="#00c9c8" stroke-width="2"/>
+          <line x1="230" y1="40" x2="210" y2="60" stroke="#00c9c8" stroke-width="2"/>
+          <line x1="30" y1="90" x2="230" y2="90" stroke="#f7b731" stroke-width="3"/>
+          <line x1="30" y1="90" x2="10" y2="70" stroke="#f7b731" stroke-width="2"/>
+          <line x1="30" y1="90" x2="10" y2="110" stroke="#f7b731" stroke-width="2"/>
+          <line x1="230" y1="90" x2="250" y2="70" stroke="#f7b731" stroke-width="2"/>
+          <line x1="230" y1="90" x2="250" y2="110" stroke="#f7b731" stroke-width="2"/>
+          <text x="238" y="44" fill="#00c9c8" font-size="12" font-family="DM Sans,sans-serif">A</text>
+          <text x="238" y="94" fill="#f7b731" font-size="12" font-family="DM Sans,sans-serif">B</text>
+        </svg>
+        <p class="illusion-explain">Line A looks shorter than Line B — but they are <strong>identical in length</strong>.</p>
+        <button class="reveal-btn" onclick="toggleAnswer('ans3')">🔍 Why does this happen?</button>
+        <div id="ans3" class="illusion-answer">This is the <strong>Müller-Lyer illusion</strong>. Arrow fins pointing inward make the line appear shorter; outward fins make it appear longer. The brain uses these cues as depth signals — similar to how corners of buildings look farther or closer away.</div>
+      </div>
+
+      <!-- Illusion 4: Face/Vase -->
+      <div class="illusion-box">
+        <h3>Face or Vase?</h3>
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <!-- Vase -->
+          <path d="M100,20 C130,20 160,50 170,80 C180,110 175,160 100,190 C25,160 20,110 30,80 C40,50 70,20 100,20 Z" fill="#1a3348"/>
+          <!-- Left face -->
+          <path d="M100,20 C70,20 40,50 30,80 C20,110 25,160 100,190 Z" fill="#00c9c8" opacity=".6"/>
+          <!-- Right face -->
+          <path d="M100,20 C130,20 160,50 170,80 C180,110 175,160 100,190 Z" fill="#7f5af0" opacity=".6"/>
+          <!-- Nose highlights -->
+          <ellipse cx="100" cy="100" rx="8" ry="15" fill="#1a3348" opacity=".5"/>
+        </svg>
+        <p class="illusion-explain">Look at the image. Do you see a <strong>vase</strong> in the centre, or <strong>two faces</strong> looking at each other?</p>
+        <button class="reveal-btn" onclick="toggleAnswer('ans4')">🔍 The neuroscience</button>
+        <div id="ans4" class="illusion-answer">This is <strong>Rubin's Vase</strong>. Your brain cannot hold both interpretations simultaneously — it switches between them. This is called <strong>perceptual rivalry</strong>. The right hemisphere tends to process faces, while the left processes shapes. They "compete" for dominance.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── REACTION TIME ── -->
+  <div id="tab-reaction" class="tab-panel">
+    <div class="info-banner" style="margin-bottom:24px">
+      <strong>⚡ What this tests:</strong> Your <em>reaction time</em> reflects how fast your nervous system — from sensory processing in the visual cortex to motor execution — responds to stimuli. Average human reaction time is 200–300ms.
+    </div>
+    <div class="reaction-area">
+      <div id="reaction-box" onclick="reactionClick()">
+        Click to Start
+      </div>
+      <div id="reaction-instruction" style="color:var(--muted);font-size:.9rem;margin-bottom:16px">
+        Wait for the box to turn <span style="color:var(--success)">GREEN</span>, then click as fast as you can!
+      </div>
+      <div class="reaction-scores">
+        <div class="reaction-chip" id="score-last">Last: —</div>
+        <div class="reaction-chip" id="score-best">Best: —</div>
+        <div class="reaction-chip" id="score-avg">Avg: —</div>
+      </div>
+      <div id="score-rating" style="margin-top:16px;text-align:center;font-size:.9rem;color:var(--muted)"></div>
+    </div>
+  </div>
+
+  <!-- ── QUIZ ── -->
+  <div id="tab-quiz" class="tab-panel">
+    <div class="info-banner" style="margin-bottom:24px">
+      <strong>📝 Test your knowledge:</strong> 8 questions covering brain regions, learning disorders and cognitive functions. Good luck!
+    </div>
+    <div class="quiz-container">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-bar" style="width:0%"></div></div>
+      <div id="quiz-area"></div>
+    </div>
+  </div>
+
+</section>
+</div>
+
+<div class="divider"></div>
+
+<!-- REFERENCES -->
+<div id="references" style="padding:60px 0 0">
+<section>
+  <div class="section-label">04 — References</div>
+  <h2 style="font-size:2rem">Sources & Further Reading</h2>
+  <div style="margin-top:28px;display:flex;flex-direction:column;gap:14px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">American Psychiatric Association. (2022). <em>Diagnostic and statistical manual of mental disorders</em> (5th ed., text rev.). https://doi.org/10.1176/appi.books.9780890425787</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">Gazzaniga, M. S., Ivry, R. B., & Mangun, G. R. (2019). <em>Cognitive neuroscience: The biology of the mind</em> (5th ed.). W. W. Norton & Company.</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">Lyon, G. R., Shaywitz, S. E., & Shaywitz, B. A. (2003). A definition of dyslexia. <em>Annals of Dyslexia, 53</em>(1), 1–14. https://doi.org/10.1007/s11881-003-0001-9</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">Butterworth, B., Varma, S., & Laurillard, D. (2011). Dyscalculia: From brain to education. <em>Science, 332</em>(6033), 1049–1053. https://doi.org/10.1126/science.1201536</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">Berninger, V. W., & Wolf, B. J. (2016). <em>Dyslexia, dysgraphia, OWL LD, and dyscalculia: Lessons from science and teaching</em> (2nd ed.). Paul H. Brookes Publishing.</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">Purves, D., Augustine, G. J., Fitzpatrick, D., Hall, W. C., LaMantia, A. S., & White, L. E. (2018). <em>Neuroscience</em> (6th ed.). Sinauer Associates.</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+      <p style="font-size:.9rem;color:var(--muted)">World Health Organization. (2023). <em>Neurodevelopmental disorders</em>. https://www.who.int/news-room/fact-sheets/detail/mental-health</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- FOOTER -->
+<footer style="margin-top:80px">
+  <div class="nav-logo" style="margin-bottom:10px">Neuro<span>Spark</span></div>
+  <p>An interactive educational website on cognitive neuroscience.<br/>
+  Created for <strong>KMF1053 Cognitive Neuroscience</strong> — Universiti Malaysia Sarawak (UNIMAS).</p>
+  <p style="margin-top:12px;font-size:.78rem;color:var(--border)">Information is for educational purposes only. Please refer to clinical professionals for medical advice.</p>
+</footer>
+
+<script>
+/* ─────────────── REGION CARDS ─────────────── */
+function selectRegion(card) {
+  document.querySelectorAll('.region-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+}
+
+/* ─────────────── TABS ─────────────── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'illusion') { drawIllusion1(); drawIllusion2(); }
+  if (name === 'quiz') initQuiz();
+}
+
+/* ─────────────── ILLUSIONS ─────────────── */
+function drawIllusion1() {
+  const canvas = document.getElementById('illusionCanvas1');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width/2, cy = canvas.height/2;
+  const colours = ['#00c9c8','#0d1f30','#7f5af0','#03080f'];
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#0d1f30'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  for (let r = 90; r >= 20; r -= 18) {
+    const segs = Math.round(r * 0.9);
+    for (let i = 0; i < segs; i++) {
+      const a1 = (i / segs) * Math.PI * 2;
+      const a2 = ((i+1) / segs) * Math.PI * 2;
+      ctx.beginPath(); ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, a1, a2);
+      ctx.closePath();
+      ctx.fillStyle = (i % 2 === 0) ? colours[0] : colours[1];
+      ctx.fill();
+    }
+  }
+  ctx.beginPath(); ctx.arc(cx,cy,8,0,Math.PI*2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+}
+
+function drawIllusion2() {
+  const canvas = document.getElementById('illusionCanvas2');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const tileSize = 40;
+  for (let row = 0; row < Math.ceil(canvas.height/tileSize); row++) {
+    for (let col = 0; col < Math.ceil(canvas.width/tileSize); col++) {
+      ctx.fillStyle = ((row+col)%2===0) ? '#999' : '#555';
+      ctx.fillRect(col*tileSize, row*tileSize, tileSize, tileSize);
+    }
+  }
+  // Shadow gradient
+  const grad = ctx.createLinearGradient(80,0,200,canvas.height);
+  grad.addColorStop(0,'rgba(0,0,0,0)');
+  grad.addColorStop(0.4,'rgba(0,0,0,0)');
+  grad.addColorStop(0.55,'rgba(0,0,0,0.55)');
+  grad.addColorStop(1,'rgba(0,0,0,0.55)');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Square A
+  ctx.fillStyle = '#888'; ctx.fillRect(50,60,60,60);
+  ctx.fillStyle = '#fff'; ctx.font='bold 14px DM Sans'; ctx.fillText('A',74,96);
+  // Square B (same shade, but inside shadow)
+  ctx.fillStyle = '#888'; ctx.fillRect(150,120,60,60);
+  ctx.fillStyle = '#fff'; ctx.fillText('B',174,156);
+}
+
+let revealCanvas2 = false;
+function revealSameColour() {
+  if (revealCanvas2) return;
+  revealCanvas2 = true;
+  const canvas = document.getElementById('illusionCanvas2');
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#00c9c8'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(80,90); ctx.lineTo(150,150); ctx.stroke();
+  ctx.strokeStyle = '#f7b731'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(180,150); ctx.lineTo(180,90); ctx.stroke();
+  ctx.fillStyle = '#00c9c8'; ctx.font='11px DM Sans';
+  ctx.fillText('Same colour!',90,80);
+}
+
+function toggleAnswer(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+/* ─────────────── MEMORY GAME ─────────────── */
+const EMOJIS = ['🧠','🔬','💡','⚡','🧬','🔭','🌊','🎯'];
+let memCards = [], memFlipped = [], memMatched = 0, memMoves = 0, memTimer = null, memSeconds = 0, memLock = false;
+
+function initMemory() {
+  document.getElementById('memory-win').style.display='none';
+  memMatched=0; memMoves=0; memSeconds=0; memLock=false; memFlipped=[];
+  document.getElementById('moves').textContent='0';
+  document.getElementById('pairs').textContent='0/8';
+  document.getElementById('timer-mem').textContent='0s';
+  clearInterval(memTimer);
+  const pairs = [...EMOJIS,...EMOJIS].sort(()=>Math.random()-.5);
+  const board = document.getElementById('memory-board');
+  board.innerHTML='';
+  pairs.forEach((emoji, i) => {
+    const card = document.createElement('div');
+    card.className='memory-card';
+    card.dataset.emoji=emoji;
+    card.innerHTML=`<div class="back">🧩</div><div class="front">${emoji}</div>`;
+    card.onclick=()=>flipCard(card);
+    board.appendChild(card);
+  });
+  memTimer = setInterval(()=>{ memSeconds++; document.getElementById('timer-mem').textContent=memSeconds+'s'; }, 1000);
+}
+
+function flipCard(card) {
+  if (memLock || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  card.classList.add('flipped');
+  memFlipped.push(card);
+  if (memFlipped.length===2) {
+    memMoves++;
+    document.getElementById('moves').textContent=memMoves;
+    memLock=true;
+    setTimeout(checkMatch, 700);
+  }
+}
+
+function checkMatch() {
+  const [a,b]=memFlipped;
+  if (a.dataset.emoji===b.dataset.emoji) {
+    a.classList.add('matched'); b.classList.add('matched');
+    memMatched++;
+    document.getElementById('pairs').textContent=memMatched+'/8';
+    if (memMatched===8) {
+      clearInterval(memTimer);
+      document.getElementById('memory-win').style.display='block';
+      document.getElementById('win-stats').textContent=`Completed in ${memSeconds}s with ${memMoves} moves!`;
+    }
+  } else { a.classList.remove('flipped'); b.classList.remove('flipped'); }
+  memFlipped=[]; memLock=false;
+}
+
+/* ─────────────── REACTION TIME ─────────────── */
+let rState='idle', rStart=null, rTimer=null, rScores=[], rBest=null;
+const rBox=()=>document.getElementById('reaction-box');
+
+function reactionClick() {
+  const box=rBox();
+  if (rState==='idle' || rState==='result') {
+    box.className='wait';
+    box.textContent='⏳ Wait for green...';
+    rState='waiting';
+    clearTimeout(rTimer);
+    rTimer=setTimeout(()=>{
+      box.className='go';
+      box.textContent='⚡ CLICK NOW!';
+      rStart=performance.now(); rState='go';
+    }, 1500 + Math.random()*2500);
+  } else if (rState==='waiting') {
+    clearTimeout(rTimer);
+    box.className='';
+    box.textContent='😅 Too early! Click to try again.';
+    rState='idle';
+  } else if (rState==='go') {
+    const ms=Math.round(performance.now()-rStart);
+    rScores.push(ms); rState='result';
+    if (!rBest||ms<rBest) rBest=ms;
+    const avg=Math.round(rScores.reduce((a,b)=>a+b,0)/rScores.length);
+    document.getElementById('score-last').textContent='Last: '+ms+'ms';
+    document.getElementById('score-best').textContent='Best: '+rBest+'ms';
+    document.getElementById('score-avg').textContent='Avg: '+avg+'ms';
+    let rating='';
+    if(ms<200) rating='🏆 Superhuman! Under 200ms is exceptional.';
+    else if(ms<260) rating='⚡ Excellent! You\'re faster than average.';
+    else if(ms<350) rating='✅ Good — well within normal human range.';
+    else rating='🐌 A bit slow this time — try again!';
+    document.getElementById('score-rating').textContent=rating;
+    box.className=''; box.textContent=`⏱ ${ms}ms — ${rating.split('!')[0]}! Click to try again.`;
+  }
+}
+
+/* ─────────────── QUIZ ─────────────── */
+const QUESTIONS = [
+  { q: "Which brain region is known as the brain's 'CEO' — responsible for decision-making and impulse control?",
+    opts:['Occipital Lobe','Frontal Lobe','Cerebellum','Temporal Lobe'], ans:1,
+    explain:'The frontal lobe, especially the prefrontal cortex, manages executive functions including planning, decision-making and impulse control.' },
+  { q: "Which learning disorder primarily affects a person's ability to read and decode written language?",
+    opts:['Dyscalculia','Dysgraphia','Dyslexia','Apraxia'], ans:2,
+    explain:'Dyslexia is a language-based learning disorder caused by differences in how the brain processes phonological information, making reading and spelling difficult.' },
+  { q: "Which brain region processes visual information from your eyes?",
+    opts:['Temporal Lobe','Frontal Lobe','Parietal Lobe','Occipital Lobe'], ans:3,
+    explain:'The occipital lobe at the back of the brain is dedicated to visual processing, interpreting colour, shape, motion, and depth.' },
+  { q: "The hippocampus — critical for memory formation — is found in which lobe?",
+    opts:['Frontal Lobe','Occipital Lobe','Temporal Lobe','Parietal Lobe'], ans:2,
+    explain:'The hippocampus is located within the temporal lobe and is essential for converting short-term memories into long-term storage.' },
+  { q: "Dyscalculia is associated with reduced activation in which brain region that processes number sense?",
+    opts:['Occipital Lobe','Broca\'s Area','Intraparietal Sulcus','Cerebellum'], ans:2,
+    explain:'The intraparietal sulcus in the parietal lobe is the core "number sense" area. Reduced grey matter and activation here is a key brain mechanism in dyscalculia.' },
+  { q: "Which learning disorder involves difficulty with handwriting and fine motor coordination for writing?",
+    opts:['Dyslexia','Dyscalculia','Dysgraphia','Aphasia'], ans:2,
+    explain:'Dysgraphia affects handwriting, spelling, and written expression. It involves impairments in the motor cortex, cerebellum, and parietal lobe.' },
+  { q: "What is 'colour constancy' — demonstrated by the checker shadow illusion?",
+    opts:['The brain always sees colours accurately','The brain adjusts perceived colour based on surrounding context','The eyes can only see in black and white','Colour processing happens in the frontal lobe'], ans:1,
+    explain:'Colour constancy is the brain\'s ability to perceive a colour as stable even when lighting conditions change. The visual cortex compensates based on surrounding context.' },
+  { q: "Which brain region controls automatic functions like breathing and heart rate?",
+    opts:['Temporal Lobe','Frontal Lobe','Brainstem','Parietal Lobe'], ans:2,
+    explain:'The brainstem controls essential automatic functions including breathing, heart rate, swallowing, and sleep-wake cycles.' },
+];
+
+let qIndex=0, qScore=0, qAnswered=false;
+function initQuiz() { qIndex=0; qScore=0; renderQ(); }
+function renderQ() {
+  const area=document.getElementById('quiz-area');
+  if (qIndex>=QUESTIONS.length) {
+    area.innerHTML=`<div class="quiz-result">
+      <div class="score-big">${qScore}/${QUESTIONS.length}</div>
+      <p>${qScore>=6?'🎉 Excellent! You know your brain well!':qScore>=4?'👍 Good effort! Review the sections above.':'📚 Keep exploring — reread the sections and try again!'}</p>
+      <button class="btn btn-primary" onclick="initQuiz()">🔄 Try Again</button>
+    </div>`;
+    document.getElementById('quiz-bar').style.width='100%'; return;
+  }
+  const Q=QUESTIONS[qIndex]; qAnswered=false;
+  document.getElementById('quiz-bar').style.width=((qIndex/QUESTIONS.length)*100)+'%';
+  area.innerHTML=`
+    <div class="quiz-q">Q${qIndex+1}. ${Q.q}</div>
+    <div class="quiz-options">
+      ${Q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQ(${i})">${o}</button>`).join('')}
+    </div>
+    <div class="quiz-feedback" id="qfeedback"></div>
+    <div class="quiz-next" id="qnext" style="display:none">
+      <button class="btn btn-primary" onclick="nextQ()">Next Question →</button>
+    </div>`;
+}
+function answerQ(i) {
+  if (qAnswered) return; qAnswered=true;
+  const Q=QUESTIONS[qIndex];
+  const opts=document.querySelectorAll('.quiz-opt');
+  opts.forEach((o,idx)=>{ o.disabled=true; if(idx===Q.ans) o.classList.add('correct'); else if(idx===i) o.classList.add('wrong'); });
+  const fb=document.getElementById('qfeedback');
+  fb.className='quiz-feedback show '+(i===Q.ans?'ok':'no');
+  fb.textContent=(i===Q.ans?'✅ Correct! ':'❌ Not quite. ')+Q.explain;
+  if(i===Q.ans) qScore++;
+  document.getElementById('qnext').style.display='block';
+}
+function nextQ() { qIndex++; renderQ(); }
+
+/* ─────────────── INIT ─────────────── */
+window.addEventListener('DOMContentLoaded', ()=>{
+  initMemory();
+  initQuiz();
+  drawIllusion1();
+});
+</script>
+</body>
+</html>
